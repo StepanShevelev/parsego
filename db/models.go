@@ -8,7 +8,7 @@ type Post struct {
 	gorm.Model
 	Title  string  `json:"title" db:"title" gorm:"unique"`
 	Text   string  `json:"text" db:"text"`
-	Images []Image `json:"pets" db:"pets" gorm:"foreignKey:PostID"`
+	Images []Image `json:"images" db:"images" gorm:"foreignKey:PostID"`
 }
 
 type Image struct {

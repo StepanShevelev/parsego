@@ -41,13 +41,14 @@ func FindPostByTitle(title string) (*Post, error) {
 	return post, nil
 }
 
-func CreatePost(title string, text string, img []string) {
+func CreatePost(title string, text string, img string) {
 	var post *Post
 
 	post.Title = title
 	post.Text = text
 	//post.Images = img
-	post.Images = append(post.Images, Image{})
+	post.Images = append(post.Images, Image{Name: img})
+	//Database.Db.Model(&post).Association("Images").Append(&category)
 	Database.Db.Create(&post)
 	//Database.Db.Model(&category).Association("Users").Append(&user)
 }
