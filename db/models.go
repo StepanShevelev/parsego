@@ -16,3 +16,11 @@ type Image struct {
 	Name   string `json:"name" db:"name"`
 	PostID int    `json:"post_id" db:"post_id"`
 }
+
+// ErrLogs storage some error logs
+type ErrLogs struct {
+	gorm.Model
+	Error string `json:"error" db:"error"`
+	Place string `json:"place" db:"place"`
+	Count int    `json:"count" db:"count"`
+}
