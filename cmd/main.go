@@ -108,50 +108,48 @@ func ArticleParse() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	//doc.Find(".page_article_content a")
-
-	// For each item found, get the title
 	DataParse(doc)
-	//FindUrlInArticle(doc)
+	FindUrlInArticle(doc)
 
 }
 
 func DataParse(doc *goquery.Document) {
 
-	//doc.Find(".page_article").Each(func(i int, s *goquery.Selection) {
-	//	// For each item found, get the title
-	//	title := s.Find(".page_article_ttl").Text()
-	//
-	//	fmt.Printf("TITLE OF ARTICLE %d: %s\n", i, title)
-	//
-	//})
+	doc.Find(".page_article").Each(func(i int, s *goquery.Selection) {
+		title := s.Find(".page_article_ttl").Text()
+		fmt.Printf("TITLE OF ARTICLE %d: %s\n", i, title)
+	})
 
-	tx := doc.Find(".page_article_content")
+	doc.Find(".page_article_content").Find(".main_pic_container").Find("img").Each(func(i int, s *goquery.Selection) {
+		img, _ := s.Attr("src")
+		fmt.Printf("IMAGE OF ARTICLE %d: %s\n", i, img)
+	})
 
-	text, err := tx.Find("div").Html()
-	if err != nil {
-		logrus.Info(err)
-	}
+	doc.Find(".page_article_content").Find(".pic_container").Find("img").Each(func(i int, s *goquery.Selection) {
+		img, _ := s.Attr("src")
+		fmt.Printf("IMAGE OF ARTICLE %d: %s\n", i, img)
+	})
 
-	fmt.Printf("TEXT OF ARTICLE : %s\n", text)
+	doc.Find(".page_article_content ").Each(func(i int, s *goquery.Selection) {
+		txt := doc.Find(".page_article_content ").Each(func(i int, article *goquery.Selection) {
+			article.Find("div").Each(func(j int, s *goquery.Selection) {
+				if s.HasClass("container_wide1") || s.HasClass("uninote") {
+					s.Remove()
+				}
+			})
+		}).Text()
 
-	//doc.Find(".universal_content").Find(".pic_container").Find("img").Each(func(i int, s *goquery.Selection) {
-	//	// For each item found, get the title
-	//
-	//	img, _ := s.Attr("src")
-	//
-	//	fmt.Printf("IMAGE OF ARTICLE %d: %s\n", i, img)
-	//
-	//})
+		fmt.Printf("TEXT OF ARTICLE : %s\n", txt)
+	})
 
 }
 
 func FindUrlInArticle(doc *goquery.Document) {
 
-	// Find the review items Find(".aubli_data a")
+	logrus.Info("FindUrlInArticle starts")
+
 	doc.Find(".uninote a").Each(func(i int, s *goquery.Selection) {
-		// For each item found, get the title
+
 		Url, ok := s.Attr("href")
 		if !ok {
 			log.Println("error")
@@ -160,6 +158,8 @@ func FindUrlInArticle(doc *goquery.Document) {
 		fmt.Printf("NEW LINK FROM ARTICLE %d: %s\n", i, Url)
 
 	})
+
+	logrus.Info("FindUrlInArticle finishes")
 }
 
 //func TextParse(doc *goquery.Document) {
