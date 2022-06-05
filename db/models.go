@@ -13,8 +13,8 @@ type Post struct {
 
 type Image struct {
 	gorm.Model
-	Name   string `json:"name" db:"name"`
-	PostID int    `json:"post_id" db:"post_id"`
+	Name   []byte `json:"name" db:"name"`
+	PostID uint   `json:"post_id" db:"post_id"`
 }
 
 // ErrLogs storage some error logs

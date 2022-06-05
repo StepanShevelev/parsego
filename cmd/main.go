@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
+	mydb "github.com/StepanShevelev/parsego/db"
 	"github.com/sirupsen/logrus"
 	"log"
 	"net/http"
@@ -113,21 +114,70 @@ func ArticleParse() {
 
 }
 
+//type PostParse struct {
+//	gorm.Model
+//	Title  string       `json:"title" db:"title" gorm:"unique"`
+//	Text   string       `json:"text" db:"text"`
+//	Images []ImageParse `json:"images" db:"images" gorm:"foreignKey:PostID"`
+//}
+
+//
+//type ImageParse struct {
+//
+//	Name []byte `json:"name" db:"name"`
+//	PostID uint   `json:"post_id" db:"post_id"`
+//}
+
 func DataParse(doc *goquery.Document) {
 
-	doc.Find(".page_article").Each(func(i int, s *goquery.Selection) {
-		title := s.Find(".page_article_ttl").Text()
-		fmt.Printf("TITLE OF ARTICLE %d: %s\n", i, title)
-	})
+	var image mydb.Image
+	var post *mydb.Post
+	var id = TitleParse(doc)
+
+	//TitleParse(doc)
+	//doc.Find(".page_article").Each(func(i int, s *goquery.Selection) {
+	//	title = s.Find(".page_article_ttl").Text()
+	//	fmt.Printf("TITLE OF ARTICLE %d: %s\n", i, title)
+	//
+	//	post.Title = title
+	//	mydb.Database.Db.Select("Title").Create(&post)
+	//
+	//})
 
 	doc.Find(".page_article_content").Find(".main_pic_container").Find("img").Each(func(i int, s *goquery.Selection) {
 		img, _ := s.Attr("src")
-		fmt.Printf("IMAGE OF ARTICLE %d: %s\n", i, img)
-	})
+		//fmt.Printf("IMAGE OF ARTICLE %d: %s\n", i, img)
+		gImg := []byte(img)
 
-	doc.Find(".page_article_content").Find(".pic_container").Find("img").Each(func(i int, s *goquery.Selection) {
-		img, _ := s.Attr("src")
-		fmt.Printf("IMAGE OF ARTICLE %d: %s\n", i, img)
+		image.Name = gImg
+		image.PostID = id
+		mydb.Database.Db.Create(&image)
+		mydb.Database.Db.Find(&post, "id = ?", id)
+		logrus.Info(img)
+		//
+		//mydb.Database.Db.Model(&image).Association("posts").Append(&post)
+
+		doc.Find(".universal_content").Find(".pic_container").Find("img").Each(func(j int, se *goquery.Selection) {
+			img, _ := se.Attr("src")
+			//fmt.Printf("IMAGE OF ARTICLE %d: %s\n", j, img)
+
+			gImg := []byte(img)
+			image.Name = gImg
+			image.PostID = id
+
+			mydb.Database.Db.Create(&image)
+			mydb.Database.Db.Find(&post, "id = ?", id)
+			//logrus.Info(image)
+
+			mydb.Database.Db.Model(&image).Association("posts").Append(&post)
+
+			////Imp.Name = append(Imp.Name, gImg)
+			//var images = mydb.Image{{Name: gImg}}
+			//mydb.Database.Db.Create(&images)
+		})
+
+		//mydb.Database.Db.Model(&category).Association("Users").Append(&user)
+		//mydb.Database.Db.Model(&user).Association("Categories").Append(&category)
 	})
 
 	doc.Find(".page_article_content ").Each(func(i int, s *goquery.Selection) {
@@ -139,9 +189,36 @@ func DataParse(doc *goquery.Document) {
 			})
 		}).Text()
 
-		fmt.Printf("TEXT OF ARTICLE : %s\n", txt)
+		mydb.Database.Db.Find(&post, "id = ?", id)
+		//logrus.Info(id)
+
+		post.Text = txt
+		mydb.Database.Db.Save(&post)
+
+		//fmt.Printf("TEXT OF ARTICLE : %s\n", txt)
 	})
 
+}
+
+func TitleParse(doc *goquery.Document) uint {
+	var post mydb.Post
+
+	doc.Find(".page_article").Each(func(i int, s *goquery.Selection) {
+		title := s.Find(".page_article_ttl").Text()
+		fmt.Printf("TITLE OF ARTICLE %d: %s\n", i, title)
+
+		post.Title = title
+		mydb.Database.Db.Select("Title").Create(&post)
+		//logrus.Info(post.ID)
+
+		//result := mydb.Database.Db.Find(&post, "id = ?",)
+		////logrus.Info(id)
+		//if result.Error != nil {
+		//	return
+		//}
+	})
+
+	return post.ID
 }
 
 func FindUrlInArticle(doc *goquery.Document) {
@@ -160,6 +237,16 @@ func FindUrlInArticle(doc *goquery.Document) {
 	})
 
 	logrus.Info("FindUrlInArticle finishes")
+}
+
+func main() {
+	mydb.ConnectToDb()
+	fmt.Println("connected to db")
+
+	//UrlMainParse()
+	ArticleParse()
+	//TitleParse()
+	//ImageParse()
 }
 
 //func TextParse(doc *goquery.Document) {
@@ -197,13 +284,3 @@ func FindUrlInArticle(doc *goquery.Document) {
 //
 //	})
 //}
-
-func main() {
-	//mydb.ConnectToDb()
-	//fmt.Println("connected to db")
-
-	//UrlMainParse()
-	ArticleParse()
-	//TitleParse()
-	//ImageParse()
-}

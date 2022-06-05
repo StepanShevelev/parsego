@@ -28,27 +28,27 @@ func ConnectToDb() {
 	}
 }
 
-func FindPostByTitle(title string) (*Post, error) {
-	var post *Post
-
-	result := Database.Db.Preload("Pets").Preload("Categories").Find(&post, "title = ?", title)
-
-	if result.Error != nil {
-		UppendErrorWithPath(result.Error)
-		return nil, result.Error
-
-	}
-	return post, nil
-}
-
-func CreatePost(title string, text string, img string) {
-	var post *Post
-
-	post.Title = title
-	post.Text = text
-	//post.Images = img
-	post.Images = append(post.Images, Image{Name: img})
-	//Database.Db.Model(&post).Association("Images").Append(&category)
-	Database.Db.Create(&post)
-	//Database.Db.Model(&category).Association("Users").Append(&user)
-}
+//func FindPostByTitle(title string) (*Post, error) {
+//	var post *Post
+//
+//	result := Database.Db.Preload("Pets").Preload("Categories").Find(&post, "title = ?", title)
+//
+//	if result.Error != nil {
+//		UppendErrorWithPath(result.Error)
+//		return nil, result.Error
+//
+//	}
+//	return post, nil
+//}
+//
+//func CreatePost(title string, text string, img string) {
+//	var post *Post
+//
+//	post.Title = title
+//	post.Text = text
+//	//post.Images = img
+//	post.Images = append(post.Images, Image{Name: img})
+//	//Database.Db.Model(&post).Association("Images").Append(&category)
+//	Database.Db.Create(&post)
+//	//Database.Db.Model(&category).Association("Users").Append(&user)
+//}
