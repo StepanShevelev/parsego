@@ -128,11 +128,16 @@ func ArticleParse() {
 //	PostID uint   `json:"post_id" db:"post_id"`
 //}
 
+func RemoveIndex(s [][]byte, index int) [][]byte {
+	return append(s[:index], s[index+1:]...)
+}
+
 func DataParse(doc *goquery.Document) {
 
 	var image mydb.Image
 	var post *mydb.Post
 	var id = TitleParse(doc)
+	var imgMass [][]byte
 
 	//TitleParse(doc)
 	//doc.Find(".page_article").Each(func(i int, s *goquery.Selection) {
@@ -148,9 +153,20 @@ func DataParse(doc *goquery.Document) {
 		img, _ := s.Attr("src")
 		//fmt.Printf("IMAGE OF ARTICLE %d: %s\n", i, img)
 		gImg := []byte(img)
+		imgMass = append(imgMass, gImg)
 
-		image.Name = gImg
-		image.PostID = id
+		for i, gImg := range imgMass {
+
+			image.Name = gImg
+			image.PostID = id
+
+			mydb.Database.Db.Model(&image).Association("posts").Append(&post)
+			RemoveIndex(imgMass, i)
+
+		}
+
+		//image.Name = gImg
+		//image.PostID = id
 		mydb.Database.Db.Create(&image)
 		mydb.Database.Db.Find(&post, "id = ?", id)
 		logrus.Info(img)
@@ -162,14 +178,24 @@ func DataParse(doc *goquery.Document) {
 			//fmt.Printf("IMAGE OF ARTICLE %d: %s\n", j, img)
 
 			gImg := []byte(img)
-			image.Name = gImg
-			image.PostID = id
+			imgMass = append(imgMass, gImg)
+			//image.Name = gImg
+			//image.PostID = id
+
+			for i, gImg := range imgMass {
+				image.Name = gImg
+				image.PostID = id
+
+				mydb.Database.Db.Model(&image).Association("posts").Append(&post)
+				RemoveIndex(imgMass, i)
+
+			}
 
 			mydb.Database.Db.Create(&image)
 			mydb.Database.Db.Find(&post, "id = ?", id)
 			//logrus.Info(image)
 
-			mydb.Database.Db.Model(&image).Association("posts").Append(&post)
+			//mydb.Database.Db.Model(&image).Association("posts").Append(&post)
 
 			////Imp.Name = append(Imp.Name, gImg)
 			//var images = mydb.Image{{Name: gImg}}
