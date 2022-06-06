@@ -22,6 +22,7 @@ func ConnectToDb() {
 
 	db.AutoMigrate(&Post{})
 	db.AutoMigrate(&Image{})
+	db.AutoMigrate(&ErrLogs{})
 
 	Database = DbInstance{
 		Db: db,
