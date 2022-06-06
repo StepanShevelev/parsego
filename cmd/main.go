@@ -155,59 +155,22 @@ func DataParse(doc *goquery.Document) {
 		gImg := []byte(img)
 		imgMass = append(imgMass, gImg)
 
-		//for i, gImg := range imgMass {
-		//
-		//	image.Name = gImg
-		//	image.PostID = id
-		//	logrus.Info(fmt.Sprint(imgMass))
-		//	//mydb.Database.Db.Create(&image)
-		//	//mydb.Database.Db.Find(&post, "id = ?", id)
-		//	//mydb.Database.Db.Model(&image).Association("posts").Append(&post)
-		//	RemoveIndex(imgMass, i)
-		//
-		//}
-
-		//image.Name = gImg
-		//image.PostID = id
-		//mydb.Database.Db.Create(&image)
-		//mydb.Database.Db.Find(&post, "id = ?", id)
-		//logrus.Info(img)
-		//
-		//mydb.Database.Db.Model(&image).Association("posts").Append(&post)
-
 		doc.Find(".universal_content").Find(".pic_container").Find("img").Each(func(j int, se *goquery.Selection) {
 			img, _ := se.Attr("src")
 			//fmt.Printf("IMAGE OF ARTICLE %d: %s\n", j, img)
 
 			gImg := []byte(img)
 			imgMass = append(imgMass, gImg)
-			//image.Name = gImg
-			//image.PostID = id
-
-			//mydb.Database.Db.Create(&image)
-			//mydb.Database.Db.Find(&post, "id = ?", id)
-			//logrus.Info(image)
-
-			//mydb.Database.Db.Model(&image).Association("posts").Append(&post)
-
-			////Imp.Name = append(Imp.Name, gImg)
-			//var images = mydb.Image{{Name: gImg}}
-			//mydb.Database.Db.Create(&images)
 		})
-
-		//mydb.Database.Db.Model(&category).Association("Users").Append(&user)
-		//mydb.Database.Db.Model(&user).Association("Categories").Append(&category)
 	})
 
-	for j, gImg := range imgMass {
+	for _, gImg := range imgMass {
 		image.Name = gImg
 		image.PostID = id
-
-		mydb.Database.Db.Create(&image)
+		var images = []mydb.Image{{Name: gImg, PostID: id}}
+		mydb.Database.Db.Create(&images)
 		mydb.Database.Db.Find(&post, "id = ?", id)
 		mydb.Database.Db.Model(&image).Association("posts").Append(&post)
-		RemoveIndex(imgMass, j)
-		logrus.Info(fmt.Sprint(imgMass))
 
 	}
 
@@ -221,12 +184,10 @@ func DataParse(doc *goquery.Document) {
 		}).Text()
 
 		mydb.Database.Db.Find(&post, "id = ?", id)
-		//logrus.Info(id)
 
 		post.Text = txt
 		mydb.Database.Db.Save(&post)
 
-		//fmt.Printf("TEXT OF ARTICLE : %s\n", txt)
 	})
 
 }
@@ -240,13 +201,7 @@ func TitleParse(doc *goquery.Document) uint {
 
 		post.Title = title
 		mydb.Database.Db.Select("Title").Create(&post)
-		//logrus.Info(post.ID)
 
-		//result := mydb.Database.Db.Find(&post, "id = ?",)
-		////logrus.Info(id)
-		//if result.Error != nil {
-		//	return
-		//}
 	})
 
 	return post.ID
