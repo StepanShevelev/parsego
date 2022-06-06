@@ -155,21 +155,23 @@ func DataParse(doc *goquery.Document) {
 		gImg := []byte(img)
 		imgMass = append(imgMass, gImg)
 
-		for i, gImg := range imgMass {
-
-			image.Name = gImg
-			image.PostID = id
-
-			mydb.Database.Db.Model(&image).Association("posts").Append(&post)
-			RemoveIndex(imgMass, i)
-
-		}
+		//for i, gImg := range imgMass {
+		//
+		//	image.Name = gImg
+		//	image.PostID = id
+		//	logrus.Info(fmt.Sprint(imgMass))
+		//	//mydb.Database.Db.Create(&image)
+		//	//mydb.Database.Db.Find(&post, "id = ?", id)
+		//	//mydb.Database.Db.Model(&image).Association("posts").Append(&post)
+		//	RemoveIndex(imgMass, i)
+		//
+		//}
 
 		//image.Name = gImg
 		//image.PostID = id
-		mydb.Database.Db.Create(&image)
-		mydb.Database.Db.Find(&post, "id = ?", id)
-		logrus.Info(img)
+		//mydb.Database.Db.Create(&image)
+		//mydb.Database.Db.Find(&post, "id = ?", id)
+		//logrus.Info(img)
 		//
 		//mydb.Database.Db.Model(&image).Association("posts").Append(&post)
 
@@ -182,17 +184,8 @@ func DataParse(doc *goquery.Document) {
 			//image.Name = gImg
 			//image.PostID = id
 
-			for i, gImg := range imgMass {
-				image.Name = gImg
-				image.PostID = id
-
-				mydb.Database.Db.Model(&image).Association("posts").Append(&post)
-				RemoveIndex(imgMass, i)
-
-			}
-
-			mydb.Database.Db.Create(&image)
-			mydb.Database.Db.Find(&post, "id = ?", id)
+			//mydb.Database.Db.Create(&image)
+			//mydb.Database.Db.Find(&post, "id = ?", id)
 			//logrus.Info(image)
 
 			//mydb.Database.Db.Model(&image).Association("posts").Append(&post)
@@ -205,6 +198,18 @@ func DataParse(doc *goquery.Document) {
 		//mydb.Database.Db.Model(&category).Association("Users").Append(&user)
 		//mydb.Database.Db.Model(&user).Association("Categories").Append(&category)
 	})
+
+	for j, gImg := range imgMass {
+		image.Name = gImg
+		image.PostID = id
+
+		mydb.Database.Db.Create(&image)
+		mydb.Database.Db.Find(&post, "id = ?", id)
+		mydb.Database.Db.Model(&image).Association("posts").Append(&post)
+		RemoveIndex(imgMass, j)
+		logrus.Info(fmt.Sprint(imgMass))
+
+	}
 
 	doc.Find(".page_article_content ").Each(func(i int, s *goquery.Selection) {
 		txt := doc.Find(".page_article_content ").Each(func(i int, article *goquery.Selection) {
