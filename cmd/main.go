@@ -7,14 +7,15 @@ import (
 	"github.com/sirupsen/logrus"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
 func UrlMainParse() {
 	// Request the HTML page https://www.igromania.ru/article/32249/Poigrali_v_Destroy_All_Humans!_2-Reprobed_i_delimsya_vpechatleniyami.html
 	//https://www.igromania.ru/articles/
-	time.Sleep(5 * time.Second)
-	res, err := http.Get("https://www.igromania.ru/article/32249/Poigrali_v_Destroy_All_Humans!_2-Reprobed_i_delimsya_vpechatleniyami.html")
+	time.Sleep(20 * time.Second)
+	res, err := http.Get("https://www.igromania.ru/articles/")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -36,7 +37,7 @@ func UrlMainParse() {
 		if !ok {
 			log.Println("error")
 		}
-		//ArticleParse(Url)
+		ArticleParse(Url)
 		fmt.Printf("ARTICLE URL %d: %s\n", i, Url)
 
 	})
@@ -44,110 +45,96 @@ func UrlMainParse() {
 
 // Url string
 
-func ArticleParse() {
-	// Request the HTML page
-	//if strings.Contains(Url, "https:/") {
-	//	time.Sleep(5 * time.Second)
-	//	res, err := http.Get(Url)
-	//	if err != nil {
-	//		log.Fatal(err)
-	//	}
-	//	defer res.Body.Close()
-	//	if res.StatusCode != 200 {
-	//		log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
-	//	}
-	//	// Load the HTML document
-	//	doc, err := goquery.NewDocumentFromReader(res.Body)
-	//	if err != nil {
-	//		log.Fatal(err)
-	//	}
+func ArticleParse(url string) {
+
+	if strings.Contains(url, "https:/") {
+		time.Sleep(5 * time.Second)
+		res, err := http.Get(url)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer res.Body.Close()
+		if res.StatusCode != 200 {
+			log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
+		}
+		// Load the HTML document
+		doc, err := goquery.NewDocumentFromReader(res.Body)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		doc.Find(".page_article_content a").Each(func(i int, s *goquery.Selection) {
+			// For each item found, get the title
+			urlArr := FindUrlInArticle(doc)
+			DataParse(*doc)
+
+			for _, url := range urlArr {
+				ArticleParse(url)
+			}
+
+		})
+
+	} else {
+		time.Sleep(20 * time.Second)
+		res, err := http.Get("https://www.igromania.ru" + url)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer res.Body.Close()
+		if res.StatusCode != 200 {
+			log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
+		}
+
+		// Load the HTML document
+		doc, err := goquery.NewDocumentFromReader(res.Body)
+		if err != nil {
+			log.Fatal(err)
+		}
+		doc.Find(".page_article_content a").Each(func(i int, s *goquery.Selection) {
+
+			// For each item found, get the title
+			urlArr := FindUrlInArticle(doc)
+			DataParse(*doc)
+
+			for _, url := range urlArr {
+				ArticleParse(url)
+			}
+
+		})
+	}
+
+	//time.Sleep(5 * time.Second)
+	//res, err := http.Get("https://www.igromania.ru/article/32249/Poigrali_v_Destroy_All_Humans!_2-Reprobed_i_delimsya_vpechatleniyami.html")
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//defer res.Body.Close()
+	//if res.StatusCode != 200 {
+	//	log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
+	//}
 	//
-	//	doc.Find(".page_article_content a").Each(func(i int, s *goquery.Selection) {
-	//		// For each item found, get the title
-	//		DataParse(doc)
-	//		FindUrlInArticle(doc)
+	//// Load the HTML document
+	//doc, err := goquery.NewDocumentFromReader(res.Body)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//urlArr := FindUrlInArticle(doc)
+	//DataParse(*doc)
 	//
-	//	})
-	//
-	//} else {
-	//	time.Sleep(5 * time.Second)
-	//	res, err := http.Get("https://www.igromania.ru" + Url)
-	//	if err != nil {
-	//		log.Fatal(err)
-	//	}
-	//	defer res.Body.Close()
-	//	if res.StatusCode != 200 {
-	//		log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
-	//	}
-	//
-	//	// Load the HTML document
-	//	doc, err := goquery.NewDocumentFromReader(res.Body)
-	//	if err != nil {
-	//		log.Fatal(err)
-	//	}
-	//	doc.Find(".page_article_content a").Each(func(i int, s *goquery.Selection) {
-	//
-	//		// For each item found, get the title
-	//		DataParse(doc)
-	//		FindUrlInArticle(doc)
-	//
-	//	})
+	//for _, url := range urlArr {
+	//	ArticleParse(url)
 	//}
 
-	time.Sleep(5 * time.Second)
-	res, err := http.Get("https://www.igromania.ru/article/32249/Poigrali_v_Destroy_All_Humans!_2-Reprobed_i_delimsya_vpechatleniyami.html")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer res.Body.Close()
-	if res.StatusCode != 200 {
-		log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
-	}
-
-	// Load the HTML document
-	doc, err := goquery.NewDocumentFromReader(res.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-	DataParse(doc)
-	FindUrlInArticle(doc)
-
 }
 
-//type PostParse struct {
-//	gorm.Model
-//	Title  string       `json:"title" db:"title" gorm:"unique"`
-//	Text   string       `json:"text" db:"text"`
-//	Images []ImageParse `json:"images" db:"images" gorm:"foreignKey:PostID"`
-//}
-
-//
-//type ImageParse struct {
-//
-//	Name []byte `json:"name" db:"name"`
-//	PostID uint   `json:"post_id" db:"post_id"`
-//}
-
-func RemoveIndex(s [][]byte, index int) [][]byte {
-	return append(s[:index], s[index+1:]...)
-}
-
-func DataParse(doc *goquery.Document) {
+func DataParse(doc goquery.Document) {
 
 	var image mydb.Image
 	var post *mydb.Post
-	var id = TitleParse(doc)
+
 	var imgMass [][]byte
 
-	//TitleParse(doc)
-	//doc.Find(".page_article").Each(func(i int, s *goquery.Selection) {
-	//	title = s.Find(".page_article_ttl").Text()
-	//	fmt.Printf("TITLE OF ARTICLE %d: %s\n", i, title)
-	//
-	//	post.Title = title
-	//	mydb.Database.Db.Select("Title").Create(&post)
-	//
-	//})
+	var id = TitleParse(doc)
 
 	doc.Find(".page_article_content").Find(".main_pic_container").Find("img").Each(func(i int, s *goquery.Selection) {
 		img, _ := s.Attr("src")
@@ -192,7 +179,7 @@ func DataParse(doc *goquery.Document) {
 
 }
 
-func TitleParse(doc *goquery.Document) uint {
+func TitleParse(doc goquery.Document) uint {
 	var post mydb.Post
 
 	doc.Find(".page_article").Each(func(i int, s *goquery.Selection) {
@@ -207,30 +194,35 @@ func TitleParse(doc *goquery.Document) uint {
 	return post.ID
 }
 
-func FindUrlInArticle(doc *goquery.Document) {
+func FindUrlInArticle(doc *goquery.Document) []string {
 
 	logrus.Info("FindUrlInArticle starts")
 
+	var urlArr []string
+
+	//fmt.Print(doc)
 	doc.Find(".uninote a").Each(func(i int, s *goquery.Selection) {
 
 		Url, ok := s.Attr("href")
 		if !ok {
 			log.Println("error")
 		}
-		//ArticleParse(Url)
+
+		urlArr = append(urlArr, Url)
 		fmt.Printf("NEW LINK FROM ARTICLE %d: %s\n", i, Url)
 
 	})
 
 	logrus.Info("FindUrlInArticle finishes")
+	return urlArr
 }
 
 func main() {
 	mydb.ConnectToDb()
 	fmt.Println("connected to db")
 
-	//UrlMainParse()
-	ArticleParse()
+	UrlMainParse()
+	//ArticleParse()
 	//TitleParse()
 	//ImageParse()
 }
