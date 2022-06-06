@@ -214,8 +214,11 @@ func DataParse(doc goquery.Document, url string) {
 		}
 	})
 
-	doc.Find(".page_article_content ").Each(func(i int, s *goquery.Selection) {
+	doc.Find(".lcol ").Each(func(i int, s *goquery.Selection) {
 		txt := doc.Find(".page_article_content ").Each(func(i int, article *goquery.Selection) {
+			article.Find("span").Each(func(i int, sp *goquery.Selection) {
+				sp.Remove()
+			})
 			article.Find("div").Each(func(j int, se *goquery.Selection) {
 				if se.HasClass("similar_block") || se.HasClass("container_wide1") || se.HasClass("uninote") || se.HasClass("plusminus") || se.HasClass("how_achiv") {
 					se.Remove()
