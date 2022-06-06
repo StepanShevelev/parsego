@@ -6,9 +6,11 @@ import (
 
 type Post struct {
 	gorm.Model
-	Title  string  `json:"title" db:"title" gorm:"unique"`
-	Text   string  `json:"text" db:"text"`
-	Images []Image `json:"images" db:"images" gorm:"foreignKey:PostID"`
+	Title      string  `json:"title" db:"title" gorm:"unique" `
+	Text       string  `json:"text" db:"text"`
+	SubText    string  `json:"sub_text" db:"sub_text"`
+	Images     []Image `json:"images" db:"images" gorm:"foreignKey:PostID"`
+	ArticleUrl string  `json:"article_url" db:"article_url"`
 }
 
 type Image struct {
