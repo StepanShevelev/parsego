@@ -220,6 +220,13 @@ func DataParse(doc goquery.Document, url string) {
 				sp.Remove()
 			})
 			article.Find("div").Each(func(j int, se *goquery.Selection) {
+				attr, _ := se.Attr("itemprop")
+				if attr == "description" {
+					se.Remove()
+				}
+				if attr == "articleSection" {
+					se.Remove()
+				}
 				if se.HasClass("similar_block") || se.HasClass("container_wide1") || se.HasClass("uninote") || se.HasClass("plusminus") || se.HasClass("how_achiv") {
 					se.Remove()
 
@@ -240,6 +247,7 @@ func DataParse(doc goquery.Document, url string) {
 			mydb.UppendErrorWithPath(result.Error)
 
 		}
+		txt = strings.ReplaceAll(txt, "&nbsp", " ")
 		post.Text = txt
 
 		if strings.Contains(url, "https:/") {
