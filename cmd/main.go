@@ -247,7 +247,7 @@ func DataParse(doc goquery.Document, url string) {
 			mydb.UppendErrorWithPath(result.Error)
 
 		}
-		txt = strings.ReplaceAll(txt, "&nbsp", " ")
+		txt = strings.ReplaceAll(txt, " ", " ")
 		post.Text = txt
 
 		if strings.Contains(url, "https:/") {
@@ -273,7 +273,7 @@ func TitleParse(doc goquery.Document) uint {
 
 	doc.Find(".page_article").Each(func(i int, s *goquery.Selection) {
 		title := s.Find(".page_article_ttl").Text()
-
+		title = strings.ReplaceAll(title, " ", " ")
 		post.Title = title
 		result := mydb.Database.Db.Select("Title").Create(&post)
 		if result.Error != nil {
