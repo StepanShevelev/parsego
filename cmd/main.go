@@ -107,28 +107,6 @@ func ArticleParse(url string) {
 		})
 	}
 
-	//time.Sleep(5 * time.Second)
-	//res, err := http.Get("https://www.igromania.ru/article/32249/Poigrali_v_Destroy_All_Humans!_2-Reprobed_i_delimsya_vpechatleniyami.html")
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//defer res.Body.Close()
-	//if res.StatusCode != 200 {
-	//	log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
-	//}
-	//
-	//// Load the HTML document
-	//doc, err := goquery.NewDocumentFromReader(res.Body)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//urlArr := FindUrlInArticle(doc)
-	//DataParse(*doc)
-	//
-	//for _, url := range urlArr {
-	//	ArticleParse(url)
-	//}
-
 }
 
 func DataParse(doc goquery.Document, url string) {
