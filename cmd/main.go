@@ -226,7 +226,7 @@ func DataParse(doc goquery.Document, url string) {
 
 		}
 		txt = strings.ReplaceAll(txt, " ", " ")
-		post.Text = txt
+		//post.Text = txt
 
 		if strings.Contains(url, "https:/") {
 			post.ArticleUrl = url
@@ -234,8 +234,9 @@ func DataParse(doc goquery.Document, url string) {
 			post.ArticleUrl = ("https://www.igromania.ru" + url)
 
 		}
+		//mydb.Database.Db.Save(&post)
 
-		result = mydb.Database.Db.Save(&post)
+		result = mydb.Database.Db.Model(&post).Where("id = ?", id).Update("Text", txt)
 		if result.Error != nil {
 			logrus.Info("Error occurred while updating post")
 			mydb.UppendErrorWithPath(result.Error)
